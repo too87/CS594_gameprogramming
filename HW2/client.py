@@ -5,19 +5,16 @@ from panda3d.core import NetDatagram
 from panda3d.core import QueuedConnectionListener
 from panda3d.core import QueuedConnectionManager
 from panda3d.core import QueuedConnectionReader
+import socket
 
+#from Ralph import World
 #import your modules here
-
 class client:
 
     def __init__(self):
 
-    	
-        self.cManager = QueuedConnectionManager()
-        self.cListener = QueuedConnectionListener(self.cManager, 0)
-        self.cReader = QueuedConnectionReader(self.cManager, 0)
-        self.cWriter = ConnectionWriter(self.cManager, 0)
-
+    	self.username = ""
+    	self.password = ""
         self.connection = None
         
 
@@ -32,10 +29,9 @@ class client:
         try:
 
             if self.connection == None:
-                self.connection = self.cManager.openTCPClientConnection('localhost',
-                                                                        9090,
-                                                                        1000)
-
+                #self.connection = self.cManager.openTCPClientConnection('localhost',9090,1000)
+                self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.connection.connect(("localhost", 9090))
 
                 if self.connection:
                     self.cReader.addConnection(self.connection)
@@ -49,35 +45,35 @@ class client:
 
         except:
             pass
+           
+        
 
     	self.loginHandler()
         
         #send packet
-        
-
-        myPyDatagram = PyDatagram()
-        myPyDatagram.addUint8(1)
-        myPyDatagram.addString(self.username)
-        myPyDatagram.addString('_')
-        myPyDatagram.addString(self.password)
-        self.cWriter.send(myPyDatagram,self.connection)
-        
+        self.connection.sendall(self.username+"\n")
+        self.connection.sendall(self.password+"\n")
         #receive packet
-        datagram = NetDatagram()
-        if self.cReader.getData(datagram):
-        	myProcessDataFunction(datagram)
+        self.fromServer = self.connection.recv(1024)
+        print "from Server: "+self.fromServer
+        if self.fromServer == "yes\n":
+        	print "correct username and password"
+        	#ralph = World()
+        else:
+        	print "wrong username and password"
         return False
 
     def loginHandler(self):
-    	self.username = raw_input("Enter username: ")
-    	self.password = raw_input("Enter password: ")
+    	self.hasAccount = raw_input("Do you have an Acount? (y/n):")
+    	if(self.hasAccount == 'y'):
+    		self.username = raw_input("Enter username: ")
+    		self.password = raw_input("Enter password: ")
+    	else:
+    		print "create your new account"
+    		self.username = raw_input("Enter username: ")
+    		self.password = raw_input("Enter password: ")
 
-    def myProcessDataFunction(netDatagram):
-    	myIterator = PyDatagramIterator(netDatagram)
-    	msgID = myIterator.getUnit8()
-    	if msgID == 1:
-    		msgToPrint = myIterator.getString()
-    		print msgToPrint 
+    
 
     def closeConnection(self):
         

@@ -1,4 +1,8 @@
 import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.DataInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -10,9 +14,11 @@ import java.util.StringTokenizer;
 public class server {
 	public static void main(String args[]) throws IOException {
         ServerSocket listenSocket;
-        String fromClient;
-        String toClient = "welcome";
-       // DataReader re = new DataReader();
+        String fromClient_username;
+        String fromClient_password;
+        String toClient;
+        Integer count = 0;
+       
         try {
             // Start to listen on the given port for incoming connections
             listenSocket = new ServerSocket(9090);
@@ -21,9 +27,10 @@ public class server {
             // Loop indefinitely to establish multiple connections
             while (true) {
                 try {
+                	count++;
                     // A client socket will represent a connection between the client and this server
                     Socket clientSocket = listenSocket.accept();
-                    System.out.println("A Connection Established!");
+                    System.out.println("A Connection Established!::"+count);
 
 
                     ///
@@ -31,13 +38,20 @@ public class server {
                     BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 		            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),true);
 		            
-		            fromClient = in.readLine();
+		            fromClient_username = in.readLine();
+		            fromClient_password = in.readLine();
 		            
-		            System.out.println("received: " + fromClient);
-		            
-		            int t = 1;
-		            out.println(t);
-		            out.println(toClient);
+		            //check username pass 
+		            boolean check = checkUser(fromClient_username,fromClient_password);
+		            if(check != false)
+		            	out.println("yes");
+
+		            else
+		            	out.println("no");
+
+		            //send info back to client
+
+		            //out.println(toClient);
 			        
 		            ////
 		            
@@ -56,5 +70,19 @@ public class server {
             System.out.println(e.getMessage());
         }
         }
+    public static boolean checkUser(String username, String password){
+    	
+    	System.out.println("username is:"+username);
+    	System.out.println("password is:"+password);
+    	boolean flag = false;
+    	//check wheater the username and password match
+    	//assume we has this on DB usename = admin, password = 1234
+    	if(username.equals("admin") && password.equals("1234"))
+    		flag = true;
+
+    	return flag;
+
+    }
+
     }
 
