@@ -63,10 +63,7 @@ class client:
         if self.fromServer == "yes\r\n":
             print "correct username and password"
             ralph =  __import__("Tut-Roaming-Ralph")
-            
-           
-            
-         
+          
             w = ralph.World()
             w.addRalph(w.environ.find("**/start_point").getPos())
             run()

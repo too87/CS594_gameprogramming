@@ -70,11 +70,10 @@ class World(DirectObject):
         self.environ.setPos(0,0,0)
         
         # Create the main character, Ralph
-        #ralphStartPos = self.environ.find("**/start_point").getPos()
-      
+        ralphStartPos = self.environ.find("**/start_point").getPos()
+        
         #self.addRalph(ralphStartPos)
-        
-        
+       
 
         # Create a floater object.  We use the "floater" as a temporary
         # variable in a variety of calculations.
@@ -104,7 +103,7 @@ class World(DirectObject):
         # Set up the camera
         
         base.disableMouse()
-        base.camera.setPos(self.ralph.getX(),self.ralph.getY()+10,2)
+        
         
         # We will detect the height of the terrain by creating a collision
         # ray and casting it downward toward the terrain.  One ray will
@@ -113,29 +112,7 @@ class World(DirectObject):
         # hits the terrain, we can detect the height.  If it hits anything
         # else, we rule that the move is illegal.
 
-        self.cTrav = CollisionTraverser()
-
-        self.ralphGroundRay = CollisionRay()
-        self.ralphGroundRay.setOrigin(0,0,1000)
-        self.ralphGroundRay.setDirection(0,0,-1)
-        self.ralphGroundCol = CollisionNode('ralphRay')
-        self.ralphGroundCol.addSolid(self.ralphGroundRay)
-        self.ralphGroundCol.setFromCollideMask(BitMask32.bit(0))
-        self.ralphGroundCol.setIntoCollideMask(BitMask32.allOff())
-        self.ralphGroundColNp = self.ralph.attachNewNode(self.ralphGroundCol)
-        self.ralphGroundHandler = CollisionHandlerQueue()
-        self.cTrav.addCollider(self.ralphGroundColNp, self.ralphGroundHandler)
-
-        self.camGroundRay = CollisionRay()
-        self.camGroundRay.setOrigin(0,0,1000)
-        self.camGroundRay.setDirection(0,0,-1)
-        self.camGroundCol = CollisionNode('camRay')
-        self.camGroundCol.addSolid(self.camGroundRay)
-        self.camGroundCol.setFromCollideMask(BitMask32.bit(0))
-        self.camGroundCol.setIntoCollideMask(BitMask32.allOff())
-        self.camGroundColNp = base.camera.attachNewNode(self.camGroundCol)
-        self.camGroundHandler = CollisionHandlerQueue()
-        self.cTrav.addCollider(self.camGroundColNp, self.camGroundHandler)
+       
 
         # Uncomment this line to see the collision rays
         #self.ralphGroundColNp.show()
@@ -171,6 +148,30 @@ class World(DirectObject):
         self.ralph.reparentTo(render)
         self.ralph.setScale(.2)
         self.ralph.setPos(ralphStartPos)
+        self.cTrav = CollisionTraverser()
+
+        self.ralphGroundRay = CollisionRay()
+        self.ralphGroundRay.setOrigin(0,0,1000)
+        self.ralphGroundRay.setDirection(0,0,-1)
+        self.ralphGroundCol = CollisionNode('ralphRay')
+        self.ralphGroundCol.addSolid(self.ralphGroundRay)
+        self.ralphGroundCol.setFromCollideMask(BitMask32.bit(0))
+        self.ralphGroundCol.setIntoCollideMask(BitMask32.allOff())
+        self.ralphGroundColNp = self.ralph.attachNewNode(self.ralphGroundCol)
+        self.ralphGroundHandler = CollisionHandlerQueue()
+        self.cTrav.addCollider(self.ralphGroundColNp, self.ralphGroundHandler)
+
+        self.camGroundRay = CollisionRay()
+        self.camGroundRay.setOrigin(0,0,1000)
+        self.camGroundRay.setDirection(0,0,-1)
+        self.camGroundCol = CollisionNode('camRay')
+        self.camGroundCol.addSolid(self.camGroundRay)
+        self.camGroundCol.setFromCollideMask(BitMask32.bit(0))
+        self.camGroundCol.setIntoCollideMask(BitMask32.allOff())
+        self.camGroundColNp = base.camera.attachNewNode(self.camGroundCol)
+        self.camGroundHandler = CollisionHandlerQueue()
+        self.cTrav.addCollider(self.camGroundColNp, self.camGroundHandler)
+        
     
     #Records the state of the arrow keys
     def setKey(self, key, value):
