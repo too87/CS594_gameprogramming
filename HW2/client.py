@@ -6,8 +6,11 @@ from panda3d.core import QueuedConnectionListener
 from panda3d.core import QueuedConnectionManager
 from panda3d.core import QueuedConnectionReader
 import socket
+import imp
 
-#from Ralph import World
+
+
+
 #import your modules here
 class client:
 
@@ -55,10 +58,19 @@ class client:
         self.connection.sendall(self.password+"\n")
         #receive packet
         self.fromServer = self.connection.recv(1024)
-        print "from Server: "+self.fromServer
-        if self.fromServer == "yes\n":
-        	print "correct username and password"
-        	#ralph = World()
+        print "from server"
+        print(repr(self.fromServer))
+        if self.fromServer == "yes\r\n":
+            print "correct username and password"
+            ralph =  __import__("Tut-Roaming-Ralph")
+            
+           
+            
+         
+            w = ralph.World()
+            w.addRalph(w.environ.find("**/start_point").getPos())
+            run()
+            
         else:
         	print "wrong username and password"
         return False
@@ -128,9 +140,16 @@ class client:
 
     def updateRoutine(self, task):
         #A once-per-frame task used to read packets from the socket.
+        
+       
+        
         while self.cReader.dataAvailable():
+            testy = 1
+        
+        '''
             # Create a datagram to store all necessary data.
             datagram = NetDatagram()
+            
             # Retrieve the contents of the datagram.
             if self.cReader.getData(datagram):
                 # Prepare the datagram to be iterated.
@@ -140,6 +159,7 @@ class client:
                 # Pass into another method to execute the response.
                 if responseCode != 0:
                     self.handleResponse(responseCode, data)
+        '''
 
         return task.cont
      
