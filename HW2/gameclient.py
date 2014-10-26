@@ -2,6 +2,7 @@ import sys
 import struct
 from asyncore import dispatcher
 import socket
+import state as st
 
 from panda3d.core import Vec3
 
@@ -13,6 +14,7 @@ class GameClient(dispatcher):
         self.world = world
         world.client = self
         self.counter = 0
+        self.xpos = 0
         
         self.id = None
         self.msg_buffer = ""    # buffer for incoming raw data
@@ -57,13 +59,17 @@ class GameClient(dispatcher):
     def processNetworkData(self, data):
         data = data.rsplit(",")
         print "first_data: ", data
-        while (len(data) >= 6):                         
-            curData = data[0:6]   
+        
+        while (len(data) >= 7):                         
+            curData = data[0:7]   
             print "cur_data: " , curData                       
             temp = self.rpc_ops[int(curData[0])]
             func = temp[0]
-            func(curData) 
-            data = data[6:]
+            func(curData)
+            data = data[7:]
+        
+           
+           
    
            
        
@@ -84,24 +90,33 @@ class GameClient(dispatcher):
     
     # MS: small changes in methods below to handle a string in our protocol's format
     def op_createPlayer(self, opbuf):      
-        (opcode, objid, xpos, ypos, zpos, hdg) = tuple(opbuf)
+        (opcode, objid, state, xpos, ypos, zpos, hdg) = tuple(opbuf)
         print 'opcode:', opcode, ' objid:',objid, ' xpos:', xpos, ' ypos:', ypos, 'zpos:', zpos
         self.id = objid     #store the player actor object id also as client id
         player = self.world.createActor(self.id, Vec3(float(xpos), float(ypos), float(zpos)), self)
         self.world.createPlayer(player)
 
     def op_createActor(self, opbuf):
-        (opcode, objid, xpos, ypos, zpos, hdg) = tuple(opbuf)
+        (opcode, objid, state, xpos, ypos, zpos, hdg) = tuple(opbuf)
         print 'opcode:', opcode, ' objid:',objid, ' xpos:', xpos, ' ypos:', ypos, 'zpos:', zpos
         self.id = objid     
         player = self.world.createActor(self.id, Vec3(float(xpos), float(ypos), float(zpos)), self)
 
     def op_updateObjectPosition(self, opbuf):
-        (opcode, objid, xpos, ypos, zpos, hdg) = tuple(opbuf)
+        (opcode, objid, state, xpos, ypos, zpos, hdg) = tuple(opbuf)
         pos = Vec3(float(xpos), float(ypos), float(zpos))
         object = self.world.getObject(objid)
-        #if object is not None:
-            #object.motion_controller.saveNetState([state, pos, hdg])
+        if object is not None:
+            if state == "0x00":
+                state = st.LEFT
+            if state == "0x02":
+                state = st.RIGHT
+            if state == "0x04":
+                state = st.FORWARD
+            if state == "0x08":
+                state = st.BACKWARD
+    
+            object.motion_controller.saveNetState([state, pos, float(hdg)])
         
     def op_deleteObject(self, opbuf):
         print 'processing deleteObject message, objid=', objid
