@@ -56,11 +56,12 @@ class GameClient(dispatcher):
     # -------------------------------------------------------------------------
     # Process incoming raw network data    
     # MS: Rewriting this to take a string instead of a packet
-    def processNetworkData(self, data):
+    def processNetworkData(self, rawdata):
+        data = rawdata.replace("\n", "")
         data = data.rsplit(",")
         print "first_data: ", data
         
-        while (len(data) >= 7):                         
+        while (len(data) >=7):                         
             curData = data[0:7]   
             print "cur_data: " , curData                       
             temp = self.rpc_ops[int(curData[0])]
@@ -69,12 +70,6 @@ class GameClient(dispatcher):
             data = data[7:]
         
            
-           
-   
-           
-       
-       
-        
         
     # we send one of these to the server whenever our state changes due to user input
     # the server will then relay these messages to all other clients
@@ -82,8 +77,9 @@ class GameClient(dispatcher):
         # opcode 3: object position update
         # this contains: opcode, objid, state and 4 floats with the object's position and heading
         # movememnt state has bits for 'moving fwd', 'moving backwards', 'rotating right' , 'rotating left'
+
         msg = ','.join(map(str, [3, objid, state, pos[0], pos[1], pos[2], hdg])) 
-        self.send(msg)
+        self.send(msg+"\n")
 
     # -------------------------------------------------------------------------
     # handlers for messages coming from the server
@@ -115,7 +111,7 @@ class GameClient(dispatcher):
                 state = st.FORWARD
             if state == "0x08":
                 state = st.BACKWARD
-    
+        if object is not None:
             object.motion_controller.saveNetState([state, pos, float(hdg)])
         
     def op_deleteObject(self, opbuf):
