@@ -23,11 +23,11 @@ class GameClient(dispatcher):
         # The opcode is the key to a tuple containing the function to be executed
         # and the byte length of the raw message for the rpc operation
         self.rpc_ops = { 
-                            1 : [self.op_createPlayer, 21],
-                            2 : [self.op_createActor, 21],
-                            3 : [self.op_updateObjectPosition, 21],
-                            4 : [self.op_deleteObject, 4],
-                            5 : [self.op_ping, 8]
+                            1 : self.op_createPlayer,
+                            2 : self.op_createActor,
+                            3 : self.op_updateObjectPosition,
+                            4 : self.op_deleteObject,
+                            5 : self.op_ping, 
                             }
 
     # -------------------------------------------------------------------------
@@ -61,13 +61,18 @@ class GameClient(dispatcher):
         data = data.rsplit(",")
         print "first_data: ", data
         
-        while (len(data) >=7):                         
+        while (len(data) >=8):                         
             curData = data[0:7]   
-            print "cur_data: " , curData                       
-            temp = self.rpc_ops[int(curData[0])]
-            func = temp[0]
-            func(curData)
-            data = data[7:]
+            print "cur_data: " , curData  
+            if data[0] != 's':
+                #search for next 's', make that the beginning of data
+                indx = data.index('s')
+                data = data[indx:]
+                continue;
+                     
+            func  = self.rpc_ops[int(curData[1])]
+            func(curData[1:])
+            data = data[8:]
         
            
         
@@ -78,7 +83,7 @@ class GameClient(dispatcher):
         # this contains: opcode, objid, state and 4 floats with the object's position and heading
         # movememnt state has bits for 'moving fwd', 'moving backwards', 'rotating right' , 'rotating left'
 
-        msg = ','.join(map(str, [3, objid, state, pos[0], pos[1], pos[2], hdg])) 
+        msg = ','.join(map(str, ['s',3, objid, state, pos[0], pos[1], pos[2], hdg])) 
         self.send(msg+"\n")
 
     # -------------------------------------------------------------------------
@@ -104,6 +109,8 @@ class GameClient(dispatcher):
         object = self.world.getObject(objid)
         if object is not None:
             if state == "0x00":
+                state = st.IDLE
+            if state == "0x01":
                 state = st.LEFT
             if state == "0x02":
                 state = st.RIGHT
@@ -111,6 +118,7 @@ class GameClient(dispatcher):
                 state = st.FORWARD
             if state == "0x08":
                 state = st.BACKWARD
+
         if object is not None:
             object.motion_controller.saveNetState([state, pos, float(hdg)])
         
