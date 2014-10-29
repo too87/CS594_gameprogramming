@@ -157,11 +157,11 @@ class DynObject():
         self.motion_controller.processMove()
         
         # evaluate state and  move/rotate the actor accordingly
-        if (self.state & state.LEFT):
+        if (self.state == state.LEFT):
             actor.setH(actor.getH() + 300 * globalClock.getDt())
-        if (self.state & state.RIGHT):
+        if (self.state == state.RIGHT):
             actor.setH(actor.getH() - 300 * globalClock.getDt())
-        if (self.state & state.FORWARD):
+        if (self.state == state.FORWARD):
             actor.setY(actor, -25 * globalClock.getDt())
 
         # Simplistic animation control: 

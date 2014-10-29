@@ -18,7 +18,7 @@ public class server {
     static ArrayList<ClientHandler> clist = new ArrayList<ClientHandler>();
     private static ServerSocket servSocket;
     static int client_num;
-    public static void main(String args[]) throws IOException {
+	public static void main(String args[]) throws IOException {
        
       try
         {
@@ -55,16 +55,16 @@ public class server {
     }
     
     public static boolean checkUser(String username, String password){
-        
-        boolean flag = false;
+    	
+    	boolean flag = false;
         System.out.println(username);
         System.out.println(password);
-        //check wheater the username and password match
-        //assume we has this on DB usename = admin, password = 1234
-        if(username.equals("admin") && password.equals("1234"))
-            flag = true;
+    	//check wheater the username and password match
+    	//assume we has this on DB usename = admin, password = 1234
+    	if(username.equals("admin") && password.equals("1234"))
+    		flag = true;
 
-        return flag;
+    	return flag;
 
     }
 
