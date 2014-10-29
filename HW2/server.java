@@ -18,7 +18,7 @@ public class server {
     static ArrayList<ClientHandler> clist = new ArrayList<ClientHandler>();
     private static ServerSocket servSocket;
     static int client_num;
-	public static void main(String args[]) throws IOException {
+    public static void main(String args[]) throws IOException {
        
       try
         {
@@ -55,16 +55,16 @@ public class server {
     }
     
     public static boolean checkUser(String username, String password){
-    	
-    	boolean flag = false;
+        
+        boolean flag = false;
         System.out.println(username);
         System.out.println(password);
-    	//check wheater the username and password match
-    	//assume we has this on DB usename = admin, password = 1234
-    	if(username.equals("admin") && password.equals("1234"))
-    		flag = true;
+        //check wheater the username and password match
+        //assume we has this on DB usename = admin, password = 1234
+        if(username.equals("admin") && password.equals("1234"))
+            flag = true;
 
-    	return flag;
+        return flag;
 
     }
 
@@ -182,7 +182,9 @@ public class server {
       
         }
          public String stateMsg(int code, int id, String state, float xpos, float ypos, float zpos, float hdg){
-            String msg = Integer.toString(code)+","+
+            //s
+            String msg = "s,"+ 
+                        Integer.toString(code)+","+
                         Integer.toString(id)+","+
                         state+","+
                         Float.toString(xpos)+","+
@@ -251,13 +253,14 @@ public class server {
 
         public void processClientData(String data){
             String[] parts = data.split(",");
-            int code = Integer.parseInt(parts[0]);
-            int id = Integer.parseInt(parts[1]);
-            String state = parts[2];
-            float xpos = Float.parseFloat(parts[3]);
-            float ypos = Float.parseFloat(parts[4]);
-            float zpos = Float.parseFloat(parts[5]);
-            float hdg = Float.parseFloat(parts[6]);
+            //s 
+            int code = Integer.parseInt(parts[1]);
+            int id = Integer.parseInt(parts[2]);
+            String state = parts[3];
+            float xpos = Float.parseFloat(parts[4]);
+            float ypos = Float.parseFloat(parts[5]);
+            float zpos = Float.parseFloat(parts[6]);
+            float hdg = Float.parseFloat(parts[7]);
             //System.out.println("processClientData"+data);
             processRpcOp(code,id,state,xpos,ypos,zpos,hdg);
             //return parts;
@@ -268,7 +271,8 @@ public class server {
         }
 
         public String deleteObjectMessage(int id){
-            String msg ="4"+","+id;
+            //s
+            String msg ="s,4"+","+id;
             return msg;
         }
     }   
